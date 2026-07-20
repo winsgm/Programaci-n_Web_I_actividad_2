@@ -1,0 +1,22 @@
+CREATE DATABASE IF NOT EXISTS biblioteca;
+USE biblioteca;
+
+CREATE TABLE IF NOT EXISTS autor (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS categoria (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS libro (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT NOT NULL,
+    idAutor BIGINT NOT NULL,
+    idCategoria BIGINT NOT NULL,
+    FOREIGN KEY (idAutor) REFERENCES autor(id),
+    FOREIGN KEY (idCategoria) REFERENCES categoria(id)
+);

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <h1 class="mb-4 text-center">Biblioteca</h1>
+
+        <div id="globalAlert" class="alert d-none" role="alert"></div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="card-title mb-0">Crear autor</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="authorForm">
+                            <div class="mb-3">
+                                <label for="authorName" class="form-label">Nombre del autor</label>
+                                <input type="text" class="form-control" id="authorName" required placeholder="Ejemplo: Jorge Luis Borges">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Guardar autor</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="card-title mb-0">Crear categoría</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="categoryForm">
+                            <div class="mb-3">
+                                <label for="categoryName" class="form-label">Nombre de la categoría</label>
+                                <input type="text" class="form-control" id="categoryName" required placeholder="Ejemplo: Novela">
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Guardar categoría</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="card-title mb-0">Crear libro</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="bookForm">
+                            <div class="mb-3">
+                                <label for="bookTitle" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="bookTitle" required placeholder="Ejemplo: El Aleph">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="bookDesc" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="bookDesc" rows="3" required placeholder="Ingrese una descripción del libro"></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="bookAuthorId" class="form-label">Id del autor</label>
+                                    <input type="number" class="form-control" id="bookAuthorId" required placeholder="Ejemplo: 1">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="bookCategoryId" class="form-label">Id de la categoría</label>
+                                    <input type="number" class="form-control" id="bookCategoryId" required placeholder="Ejemplo: 1">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-dark w-100 mt-2">Guardar libro</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const BASE_URL = "https://localhost:7260";
+
+            function showAlert(message, isSuccess) {
+                const alertBox = $('#globalAlert');
+                alertBox.removeClass('d-none alert-success alert-danger');
+                alertBox.addClass(isSuccess ? 'alert-success' : 'alert-danger');
+                alertBox.text(message);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            $('#authorForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const payload = {
+                    nombre: $('#authorName').val().trim()
+                };
+
+                $.ajax({
+                    url: `${BASE_URL}/api/Author/CrearAutor`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    success: function() {
+                        showAlert('Autor creado correctamente', true);
+                        $('#authorForm')[0].reset();
+                    },
+                    error: function(xhr, status, error) {
+                        showAlert(`Error al crear el autor: ${xhr.responseText || error}`, false);
+                    }
+                });
+            });
+
+            $('#categoryForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const payload = {
+                    nombre: $('#categoryName').val().trim()
+                };
+
+                $.ajax({
+                    url: `${BASE_URL}/api/Category/CrearCategoria`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    success: function() {
+                        showAlert('Categoría creada correctamente', true);
+                        $('#categoryForm')[0].reset();
+                    },
+                    error: function(xhr, status, error) {
+                        showAlert(`Error al crear la categoría: ${xhr.responseText || error}`, false);
+                    }
+                });
+            });
+
+            $('#bookForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const payload = {
+                    titulo: $('#bookTitle').val().trim(),
+                    descripcion: $('#bookDesc').val().trim(),
+                    idAutor: parseInt($('#bookAuthorId').val(), 10),
+                    idCategoria: parseInt($('#bookCategoryId').val(), 10)
+                };
+
+                $.ajax({
+                    url: `${BASE_URL}/api/Book/CrearLibro`,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(payload),
+                    success: function() {
+                        showAlert('Libro creado correctamente', true);
+                        $('#bookForm')[0].reset();
+                    },
+                    error: function(xhr, status, error) {
+                        showAlert(`Error al crear el libro: ${xhr.responseText || error}`, false);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
